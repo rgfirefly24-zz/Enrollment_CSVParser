@@ -1,0 +1,7 @@
+UserId,FirstName,LastName,Version,InsuranceCompany
+1,John,Doe,e,Cigna
+2,Jane,Doe,2,Aetna
+1,John,Doe,2,Cigna
+1,John ,Doe,1,Aetna
+3,Jimmy,Doe,1,Molina
+4,Jenny,Doe,1,Molina
