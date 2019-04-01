@@ -36,6 +36,7 @@ public class Main {
         companyDict = ProcessData(rdr, headers);
 
         for(Map.Entry<String,ArrayList<Enrollment>> entry: companyDict.entrySet()){
+            entry.getValue().sort(Enrollment.SortByName);
             CreateCSV(entry.getKey(), entry.getValue(), headers);
         }
     }
@@ -118,7 +119,7 @@ public class Main {
 
         for(int i = 0; i < headers.size(); i++){
             headerLine[i] = headers.get(i);
-        } 
+        }
 
         lines.add(headerLine);
 
