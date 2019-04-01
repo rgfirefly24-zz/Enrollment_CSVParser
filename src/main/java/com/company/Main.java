@@ -50,7 +50,7 @@ public class Main {
             enrollment.setFirstName(line[DetermineIndexByColumnName(headers,"FirstName")]);
             enrollment.setLastName(line[DetermineIndexByColumnName(headers,"LastName")]);
             if(TryParse(line[DetermineIndexByColumnName(headers,"Version")])) {
-                Integer version = Integer.parseInt(line[DetermineIndexByColumnName(headers,"Version")]);
+                int version = Integer.parseInt(line[DetermineIndexByColumnName(headers,"Version")]);
                 enrollment.setVersion(version);
             }
             enrollment.setInsuranceCompany(line[DetermineIndexByColumnName(headers,"InsuranceCompany")]);
@@ -63,16 +63,29 @@ public class Main {
             else{
                 List<Enrollment> enrollments = companyDict.get(enrollment.getInsuranceCompany());
                 Iterator<Enrollment> iterator = enrollments.iterator();
-
+                boolean addEnrollment = false;
                 while(iterator.hasNext()){
                     Enrollment e = iterator.next();
 
-                    if(e.compareTo(enrollment) < 0){
+                    //The current enrollment is a lower version
+                    if(e.compareTo(enrollment) == -1){
                         iterator.remove();
-                        break;
+                        addEnrollment = true;
+                    }
+                    //The current enrollment is the same version or higher
+                    else if(e.compareTo(enrollment) == 1 || e.compareTo(enrollment) == 0){
+                        //it's the greater version so don't add
+                        addEnrollment = false;
+                    }
+                    //Not the same as an existing enrollment.
+                    else if(e.compareTo(enrollment) == 99){
+                        addEnrollment = true;
                     }
                 }
-                enrollments.add(enrollment);
+
+                if(addEnrollment){
+                    enrollments.add(enrollment);
+                }
             }
         }
 
@@ -105,23 +118,19 @@ public class Main {
 
         for(int i = 0; i < headers.size(); i++){
             headerLine[i] = headers.get(i);
-        }
+        } 
 
         lines.add(headerLine);
 
-        Iterator<Enrollment> enrollmentIterator = data.iterator();
-
-        while(enrollmentIterator.hasNext()){
-            Enrollment e = enrollmentIterator.next();
+        for (Enrollment e : data)
             lines.add(new String[]{e.getUserId(), e.getFirstName(), e.getLastName(), e.getVersion().toString(), e.getInsuranceCompany()});
-        }
 
         return lines;
     }
     /// We use a TryParse like this because
     /// 1. Apparently Java doesn't have extension methods
     /// 2. It also doesn't have a tryparse method because there are no "Out" parameters
-    public static Boolean TryParse(String s){
+    private static Boolean TryParse(String s){
         try {
             Integer.parseInt(s);
             return true;
@@ -131,7 +140,7 @@ public class Main {
         }
     }
 
-    public static Integer DetermineIndexByColumnName(List<String> headers, String columnName){
+    private static Integer DetermineIndexByColumnName(List<String> headers, String columnName){
         if(headers.indexOf(columnName) == -1)
             throw new IndexOutOfBoundsException("Column does not Exist in Excel File");
         else
